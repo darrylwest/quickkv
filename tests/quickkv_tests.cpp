@@ -4,6 +4,7 @@
 #include <quickkv/quickkv.hpp>
 #include <catch2/catch_all.hpp>  // For Catch2 v3
 #include <filesystem>
+#include <print>
 
 #include "test_helpers.hpp"
 
@@ -15,6 +16,14 @@ void populate_database(quickkv::Database& db, const size_t size = 100) {
 
         db.set(key, std::to_string(value));
     }
+}
+
+TEST_CASE("Quick KV Tests", "[quickkv][version]") {
+
+    auto vers = quickkv::get_version();
+    std::println("Version: {}", vers);
+
+    REQUIRE(vers.starts_with("0.3."));
 }
 
 TEST_CASE("Quick KV Tests", "[quickkv][set_get]") {

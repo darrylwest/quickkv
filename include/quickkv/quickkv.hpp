@@ -25,6 +25,9 @@ template <typename T> using Func = std::function<T>;
 template <typename T> using Optional = std::optional<T>;
 
 namespace quickkv {
+    constexpr StrView get_version() {
+        return PROJECT_VERSION;
+    }
 
     using FilterFunc = std::function<bool(const Str&)>;
     using SortedMap = std::map<Str, Str>;
