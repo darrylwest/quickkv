@@ -18,6 +18,25 @@ if(NOT EXISTS ${CPM_DOWNLOAD_LOCATION})
     file(DOWNLOAD https://github.com/TheLartians/CPM.cmake/releases/download/v${CPM_DOWNLOAD_VERSION}/CPM.cmake ${CPM_DOWNLOAD_LOCATION})
 endif()
 
+# MacOS universal binary setup
+if(APPLE)
+    execute_process(
+            COMMAND uname -m
+            OUTPUT_VARIABLE HOST_ARCHITECTURE
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+    if(HOST_ARCHITECTURE STREQUAL "arm64")
+        set(CMAKE_OSX_ARCHITECTURES "arm64")
+    else()
+        set(CMAKE_OSX_ARCHITECTURES "x86_64")
+    endif()
+    message(STATUS "osx arch: ${CMAKE_OSX_ARCHITECTURES}")
+elseif(UNIX AND NOT APPLE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++")
+    message(STATUS "linux")
+endif()
+
 include(${CPM_DOWNLOAD_LOCATION})
 
 # Find required packages
