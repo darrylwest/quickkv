@@ -65,7 +65,7 @@ do
             shift
         ;;
         format)
-            clang-format -i include/app/*.hpp src/*.cpp
+            clang-format -i include/quickkv/*.hpp src/*.cpp
             git status -s
 
             shift
