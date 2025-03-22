@@ -1,10 +1,6 @@
 cmake_minimum_required(VERSION 3.30)
 
 project(quickkv VERSION 0.3.2 LANGUAGES CXX)
-set(BUILD_NUMBER "101")
-set (FULL_VERSION "${PROJECT_VERSION}-${BUILD_NUMBER}")
-add_definitions(-DPROJECT_VERSION="${FULL_VERSION}")
-message(STATUS "Version: ${FULL_VERSION}")
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
