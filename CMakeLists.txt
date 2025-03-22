@@ -21,12 +21,7 @@ if(APPLE)
             OUTPUT_VARIABLE HOST_ARCHITECTURE
             OUTPUT_STRIP_TRAILING_WHITESPACE
     )
-
-    if(HOST_ARCHITECTURE STREQUAL "arm64")
-        set(CMAKE_OSX_ARCHITECTURES "arm64")
-    else()
-        set(CMAKE_OSX_ARCHITECTURES "x86_64")
-    endif()
+    set(CMAKE_OSX_ARCHITECTURES "${HOST_ARCHITECTURE}")
     message(STATUS "osx arch: ${CMAKE_OSX_ARCHITECTURES}")
 elseif(UNIX AND NOT APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++")
@@ -36,14 +31,12 @@ endif()
 include(${CPM_DOWNLOAD_LOCATION})
 
 # Find required packages
-# spdlog
 CPMAddPackage(
         NAME spdlog
         GITHUB_REPOSITORY gabime/spdlog
-        VERSION 1.15.0)
+        VERSION 1.15.0
+)
 
-
-# nlohmann_json
 find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(Catch2 3 REQUIRED)
 
@@ -51,60 +44,45 @@ find_package(Catch2 3 REQUIRED)
 option(ENABLE_TESTS "Build tests" ON)
 if (ENABLE_TESTS)
     enable_testing()
-
     add_executable(quickkv_tests tests/main.cpp tests/quickkv_tests.cpp)
-    target_link_libraries(quickkv_tests PRIVATE 
-        quickkv 
-        spdlog::spdlog
-        Catch2::Catch2WithMain
+    target_link_libraries(quickkv_tests PRIVATE
+            quickkv
+            spdlog::spdlog
+            Catch2::Catch2WithMain
     )
-
-    add_test(NAME quickkv_tests COMMAND test_quickkv)
+    add_test(NAME quickkv_tests COMMAND quickkv_tests)
 endif()
 
-
-install(DIRECTORY include/ DESTINATION include)
-
-
-# Export the library for other CMake projects
-#install(EXPORT quickkvTargets
-#    FILE quickkvTargets.cmake
-#    NAMESPACE quickkv::
-#    DESTINATION lib/cmake/quickkv
-#)
-
 # Define the static library
-add_library(quickkv STATIC
-    src/quickkv.cpp
-)
+add_library(quickkv STATIC src/quickkv.cpp)
 
-target_link_libraries(quickkv PUBLIC 
-    nlohmann_json::nlohmann_json
-    spdlog::spdlog
+target_link_libraries(quickkv PUBLIC
+        nlohmann_json::nlohmann_json
+        spdlog::spdlog
 )
 
 target_include_directories(quickkv PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(
-    "${CMAKE_CURRENT_BINARY_DIR}/quickkvConfigVersion.cmake"
-    VERSION ${PROJECT_VERSION}
-    COMPATIBILITY AnyNewerVersion
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
 )
 
 # Installation rules
+install(DIRECTORY include/ DESTINATION include)
 install(TARGETS quickkv
-    EXPORT quickkvTargets
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
-    RUNTIME DESTINATION bin
+        EXPORT quickkvTargets
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
+)
+
+# Export the library for other CMake projects
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+        "${CMAKE_CURRENT_BINARY_DIR}/quickkvConfigVersion.cmake"
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY AnyNewerVersion
 )
 install(FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/quickkvConfigVersion.cmake"
-    DESTINATION lib/cmake/quickkv
+        "${CMAKE_CURRENT_BINARY_DIR}/quickkvConfigVersion.cmake"
+        DESTINATION lib/cmake/quickkv
 )
-
-
