@@ -66,6 +66,20 @@ target_include_directories(quickkv PUBLIC
         $<INSTALL_INTERFACE:include>
 )
 
+# Add examples
+file(GLOB EXAMPLE_SOURCES examples/*.cpp)
+
+foreach(EXAMPLE_SOURCE ${EXAMPLE_SOURCES})
+    get_filename_component(EXAMPLE_NAME ${EXAMPLE_SOURCE} NAME_WE)
+    add_executable(${EXAMPLE_NAME} ${EXAMPLE_SOURCE})
+
+    set_target_properties(${EXAMPLE_NAME} PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/examples"
+    )
+
+    target_link_libraries(${EXAMPLE_NAME} PRIVATE quickkv)
+endforeach()
+
 # Installation rules
 install(DIRECTORY include/ DESTINATION include)
 install(TARGETS quickkv
@@ -86,3 +100,5 @@ install(FILES
         "${CMAKE_CURRENT_BINARY_DIR}/quickkvConfigVersion.cmake"
         DESTINATION lib/cmake/quickkv
 )
+
+
