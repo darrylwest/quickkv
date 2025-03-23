@@ -7,7 +7,7 @@
 
 int main() {
     // Create an instance of your key-value store
-    quickkv::Database db;
+    quickkv::KVStore db;
     std::println("db size: {}", db.size());
 
     // Insert some key-value pairs

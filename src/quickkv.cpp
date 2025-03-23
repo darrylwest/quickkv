@@ -3,11 +3,11 @@
 //
 
 #include <algorithm>
+#include <fstream>
 #include <quickkv/quickkv.hpp>
 #include <ranges>
-#include <sstream>
-#include <fstream>
 #include <spdlog/spdlog.h>
+#include <sstream>
 
 /*
  * create a k/v compatible with future redis integration
@@ -28,19 +28,19 @@ namespace quickkv {
         file.close();
     }
 
-    bool read_current_data(Database &db) {
+    bool read_current_data(KVStore &store) {
         // TODO read from configuration, all database files
         Str location = "cottage";
-        const FilePath path = "data/temperature/current." + location + ".db";
+        const FilePath path = "data/temperature/current." + location + ".store";
 
         spdlog::info("read current data from {}", path.string());
-        db.read(path, false);
-        spdlog::info("db size: {}", db.size());
+        store.read(path, false);
+        spdlog::info("store size: {}", store.size());
 
         return true;
     }
 
-    bool Database::set(const Str &key, const Str &value) {
+    bool KVStore::set(const Str &key, const Str &value) {
         std::lock_guard<std::mutex> lock(mtx);
         if (data.contains(key)) {
             data[key] = value;
@@ -51,7 +51,7 @@ namespace quickkv {
         }
     }
 
-    Optional<Str> Database::get(const Str &key) const {
+    Optional<Str> KVStore::get(const Str &key) const {
         std::lock_guard<std::mutex> lock(mtx);
         auto it = data.find(key);
         if (it != data.end()) {
@@ -61,7 +61,7 @@ namespace quickkv {
         }
     }
 
-    SortedMap Database::last(const size_t count) const {
+    SortedMap KVStore::last(const size_t count) const {
         SortedMap result;
         std::lock_guard<std::mutex> lock(mtx);
 
@@ -79,7 +79,7 @@ namespace quickkv {
 
     // Thread-safe keys method with optional filter; returns sorted vector
     // returns a new Vec<Str> as a copy.
-    Vec<Str> Database::keys(const FilterFunc &filter) const {
+    Vec<Str> KVStore::keys(const FilterFunc &filter) const {
         Vec<Str> key_list;
 
         std::lock_guard<std::mutex> lock(mtx);
@@ -90,7 +90,7 @@ namespace quickkv {
         return key_list;
     }
 
-    SortedMap Database::search(const FilterFunc &filter) const {
+    SortedMap KVStore::search(const FilterFunc &filter) const {
         SortedMap map;
 
         std::lock_guard<std::mutex> lock(mtx);
@@ -100,10 +100,10 @@ namespace quickkv {
         return map;
     }
 
-    size_t Database::size() const { return data.size(); }
+    size_t KVStore::size() const { return data.size(); }
 
     // Thread-safe read from file
-    bool Database::read(const FilePath &path, bool clear) {
+    bool KVStore::read(const FilePath &path, bool clear) {
         std::lock_guard<std::mutex> lock(mtx);
         std::ifstream infile(path);
         if (!infile.is_open()) {
@@ -127,7 +127,7 @@ namespace quickkv {
     }
 
     // Thread-safe dump/save to file
-    bool Database::save(const FilePath &path) const {
+    bool KVStore::save(const FilePath &path) const {
         std::lock_guard<std::mutex> lock(mtx);
         std::ofstream outfile(path);
         if (!outfile.is_open()) {

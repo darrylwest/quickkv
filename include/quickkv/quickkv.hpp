@@ -24,7 +24,7 @@ using Func = std::function<T>;
 template<typename T>
 using Optional = std::optional<T>;
 
-constexpr auto VERSION = "0.3.6.102";
+constexpr auto VERSION = "0.3.6.103";
 namespace quickkv {
     constexpr StrView get_version() { return VERSION; }
 
@@ -34,10 +34,10 @@ namespace quickkv {
     // append the key/value to the file; throws FileException on error
     void append_key_value(const FilePath &filename, const Str &key, const Str &value);
 
-    // a lambda to pass to Database::keys() (the default)
+    // a lambda to pass to KBStore::keys() (the default)
     static FilterFunc all_keys = [](const Str &) { return true; };
 
-    struct Database {
+    struct KVStore {
     private:
         std::map<Str, Str> data;
         mutable std::mutex mtx; // mutable to allow locking in const methods
@@ -70,7 +70,7 @@ namespace quickkv {
         // return the current database size
         size_t size() const;
 
-        // read from file to populate database; optionally clear the db first
+        // read from file to populate database; optionally clear the store first
         bool read(const FilePath &path, bool clear = false);
 
         // save the current database to file
@@ -79,7 +79,7 @@ namespace quickkv {
     }; // struct database
 
     // open and readin database files (reference config)
-    bool read_current_data(Database &db);
+    bool read_current_data(KVStore &store);
 
     // Base exception class
     class ServiceException : public std::exception {
@@ -102,7 +102,7 @@ namespace quickkv {
         using ServiceException::ServiceException;
     };
 
-    class DatabaseException : public ServiceException {
+    class KBStore : public ServiceException {
     public:
         using ServiceException::ServiceException;
     };
