@@ -45,7 +45,7 @@ do
 
             shift
         ;;
-        unit)
+        unit|test)
             # (cd build && time make $FLAGS)
             $root/build/quickkv_tests
 

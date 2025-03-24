@@ -15,7 +15,7 @@
 namespace quickkv {
     // append the key/value to the file; throws on error; returns the number of
     // bytes written
-    void append_key_value(const FilePath &path, const Str &key, const Str &value) {
+    void append_key_value(const FilePath &path, const KeyType &key, const Str &value) {
         std::ofstream file(path, std::ios::app);
 
         if (!file.is_open()) {
@@ -40,7 +40,7 @@ namespace quickkv {
         return true;
     }
 
-    bool KVStore::set(const Str &key, const Str &value) {
+    bool KVStore::set(const KeyType &key, const Str &value) {
         std::lock_guard<std::mutex> lock(mtx);
         if (data.contains(key)) {
             data[key] = value;
@@ -51,7 +51,7 @@ namespace quickkv {
         }
     }
 
-    Optional<Str> KVStore::get(const Str &key) const {
+    Optional<Str> KVStore::get(const KeyType &key) const {
         std::lock_guard<std::mutex> lock(mtx);
         auto it = data.find(key);
         if (it != data.end()) {
@@ -118,7 +118,7 @@ namespace quickkv {
         Str line;
         while (std::getline(infile, line)) {
             std::istringstream iss(line);
-            Str key;
+            KeyType key;
             Str value;
             if (std::getline(iss, key, '=') && std::getline(iss, value)) {
                 data[key] = value;

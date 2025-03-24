@@ -14,7 +14,7 @@ _  __ `/  / / /_  /_  ___/_  //_/    __  //_/_ | / /
 ## Keys Format
 
 * 12 character, base 62
-* array<char, 12>
+* array<char, 12> ?
 * timestamp, random
 
 ## Data Format
@@ -49,4 +49,4 @@ is zero, then no data is available; if the command does not take data, a value i
 * keys filter
 * last n
 
-###### 2025.03.14 | dpw
+###### 2025.03.24 | dpw

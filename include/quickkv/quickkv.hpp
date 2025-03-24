@@ -29,14 +29,16 @@ constexpr auto VERSION = "0.3.6.103";
 namespace quickkv {
     constexpr StrView get_version() { return VERSION; }
 
+    using KeyType = Str;
+
     using FilterFunc = std::function<bool(const Str &)>;
     using SortedMap = std::map<Str, Str>;
 
     // append the key/value to the file; throws FileException on error
-    void append_key_value(const FilePath &filename, const Str &key, const Str &value);
+    void append_key_value(const FilePath &filename, const KeyType &key, const Str &value);
 
     // a lambda to pass to KBStore::keys() (the default)
-    static FilterFunc all_keys = [](const Str &) { return true; };
+    static FilterFunc all_keys = [](const KeyType &) { return true; };
 
     struct KVStore {
     private:
@@ -46,15 +48,15 @@ namespace quickkv {
     public:
         // Thread-safe set method; inserts or updates the key/value pair; true if
         // inserted
-        bool set(const Str &key, const Str &value);
+        bool set(const KeyType &key, const Str &value);
 
         // Thread-safe get method; returns data for key or an empty string if not
         // found
         // TODO replace the return with a std::expected rather than an empty string
-        Optional<Str> get(const Str &key) const;
+        Optional<Str> get(const KeyType &key) const;
 
         // Thread-safe remove method
-        bool remove(const Str &key) {
+        bool remove(const KeyType &key) {
             std::lock_guard<std::mutex> lock(mtx);
             return data.erase(key) > 0;
         }
