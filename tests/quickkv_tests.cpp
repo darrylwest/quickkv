@@ -152,7 +152,7 @@ TEST_CASE("KVStore Tests", "[database][write_database]") {
     REQUIRE(store.size() == size);
 
     const auto path = helpers::create_temp_path("store-write-test_");
-    bool ok = store.save(path);
+    bool ok = store.write(path);
     REQUIRE(ok);
 
     quickkv::KVStore xstore;

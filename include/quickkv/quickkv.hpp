@@ -11,6 +11,7 @@
 #include <mutex>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 // type defines
@@ -74,18 +75,18 @@ namespace quickkv {
         bool read(const FilePath &path, bool clear = false);
 
         // save the current database to file
-        bool save(const FilePath &path) const;
+        bool write(const FilePath &path) const;
 
     }; // struct database
 
-    // open and readin database files (reference config)
+    // open and database files (reference config)
     bool read_current_data(KVStore &store);
 
     // Base exception class
     class ServiceException : public std::exception {
     public:
-        explicit ServiceException(const Str &message) : msg_(message) {}
-        const char *what() const noexcept override { return msg_.c_str(); }
+        explicit ServiceException(Str message) : msg_(std::move(message)) {}
+        [[nodiscard]] const char *what() const noexcept override { return msg_.c_str(); }
 
     private:
         Str msg_;

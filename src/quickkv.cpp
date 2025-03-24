@@ -118,7 +118,8 @@ namespace quickkv {
         Str line;
         while (std::getline(infile, line)) {
             std::istringstream iss(line);
-            Str key, value;
+            Str key;
+            Str value;
             if (std::getline(iss, key, '=') && std::getline(iss, value)) {
                 data[key] = value;
             }
@@ -127,7 +128,7 @@ namespace quickkv {
     }
 
     // Thread-safe dump/save to file
-    bool KVStore::save(const FilePath &path) const {
+    bool KVStore::write(const FilePath &path) const {
         std::lock_guard<std::mutex> lock(mtx);
         std::ofstream outfile(path);
         if (!outfile.is_open()) {
