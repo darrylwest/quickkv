@@ -85,23 +85,12 @@ do
 
             exit 0
         ;;
-        sync)
-            watchexec -c -w src/ -w include/ -w tests/ -e h,hpp,cpp ./sync.sh
-
-            exit 0
-        ;;
-        unsync)
-            git status -s | egrep '^ M ' | egrep 'include/app/|src/|tests/' | egrep '.hpp|.cpp' | while read f
+        exam*)
+            for f in ./build/examples/*
             do
-                fn=`echo $f | cut -c 3-200`
-                echo $fn
-                git co $fn
+                ./$f
             done
-
-            exit 0
-        ;;
-        shutdown)
-            curl -X DELETE "http://localhost:${port}/api/shutdown"
+            
             shift
         ;;
 
@@ -122,7 +111,7 @@ do
             echo "   pull     : pull the latest repo changes"
             echo "   clean    : remove binary builds but leave the build folder"
             echo "   clobber  : remove the entire build folder"
-            echo "   shutdown : shutdown a local instance"
+            echo "   examples : run the exampes"
             echo "   help     : show this help"
             
             exit 0
