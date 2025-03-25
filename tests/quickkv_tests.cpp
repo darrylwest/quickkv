@@ -2,6 +2,7 @@
 // Created by dpw on 2/27/25.
 //
 #include <quickkv/quickkv.hpp>
+#include <domainkeys/keys.hpp>
 #include <catch2/catch_all.hpp>  // For Catch2 v3
 #include <filesystem>
 #include <print>
@@ -11,7 +12,7 @@
 void populate_database(quickkv::KVStore& store, const size_t size = 100) {
 
     for (size_t i = 0; i < size; ++i) {
-        auto key = std::to_string(helpers::random_int());
+        auto key = domainkeys::keys::create_route_key().to_string();
         auto value = helpers::random_float(20.0, 30.0);
 
         store.set(key, std::to_string(value));

@@ -2,14 +2,15 @@
 
 
 #include <quickkv/quickkv.hpp>
+#include <domainkeys/keys.hpp>
 #include <print>
 #include <fmt/core.h>
 
 void populate_database(quickkv::KVStore& store, const size_t size = 100) {
 
     for (size_t i = 0; i < size; ++i) {
-        auto key = std::to_string(i + 1000);
-        auto value = fmt::format("{} thing", key);
+        auto key = domainkeys::keys::create_timestamp_key().to_string();
+        auto value = domainkeys::keys::create_random_key(24);
 
         store.set(key, value);
     }

@@ -44,7 +44,11 @@ find_package(Catch2 3 REQUIRED)
 option(ENABLE_TESTS "Build tests" ON)
 if (ENABLE_TESTS)
     enable_testing()
-    add_executable(quickkv_tests tests/main.cpp tests/quickkv_tests.cpp)
+    add_executable(quickkv_tests
+            tests/main.cpp
+            tests/quickkv_tests.cpp
+            tests/keys_tests.cpp
+    )
     target_link_libraries(quickkv_tests PRIVATE
             quickkv
             spdlog::spdlog
@@ -54,7 +58,10 @@ if (ENABLE_TESTS)
 endif()
 
 # Define the static library
-add_library(quickkv STATIC src/quickkv.cpp)
+add_library(quickkv STATIC
+        src/keys.cpp
+        src/quickkv.cpp
+)
 
 target_link_libraries(quickkv PUBLIC
         nlohmann_json::nlohmann_json
