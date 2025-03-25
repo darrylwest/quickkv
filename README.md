@@ -16,6 +16,7 @@ _  __ `/  / / /_  /_  ___/_  //_/    __  //_/_ | / /
 * 12 character, base 62
 * array<char, 12> ?
 * timestamp, random
+* worst case colision probability is 0.00128%. _(based on creating 3 keys in the same microsecond where 2 of the three generate the same random part)_
 
 ## Data Format
 

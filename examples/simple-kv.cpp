@@ -5,7 +5,7 @@
 #include <domainkeys/keys.hpp>
 #include <print>
 
-void populate_database(quickkv::KVStore& store, const size_t size = 100) {
+void populate_database(quickkv::KVStore& store, const size_t size = 1000) {
 
     for (size_t i = 0; i < size; ++i) {
         auto key = domainkeys::keys::create_timestamp_key().to_string();
@@ -16,9 +16,9 @@ void populate_database(quickkv::KVStore& store, const size_t size = 100) {
 }
 
 int main() {
-    std::println("Running a simple example that creates a 100 element kv store and shows the first 10...");
+    std::println("Running a simple example that creates a 1000 element kv store and shows the first 10...");
     // Create an instance of your key-value store
-    //
+
     quickkv::KVStore store;
     populate_database(store);
 
