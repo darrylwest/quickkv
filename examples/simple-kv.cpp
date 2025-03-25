@@ -4,7 +4,6 @@
 #include <quickkv/quickkv.hpp>
 #include <domainkeys/keys.hpp>
 #include <print>
-#include <fmt/core.h>
 
 void populate_database(quickkv::KVStore& store, const size_t size = 100) {
 
