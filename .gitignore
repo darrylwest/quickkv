@@ -10,3 +10,4 @@ ai-prompts
 logs/*.log
 datetimelib
 soxlib
+domain-keys
