@@ -4,6 +4,7 @@
 #include <quickkv/quickkv.hpp>
 #include <domainkeys/keys.hpp>
 #include <print>
+#include <vendor/perftimer.hpp>
 
 void populate_database(quickkv::KVStore& store, const size_t size = 1000) {
 
@@ -16,13 +17,24 @@ void populate_database(quickkv::KVStore& store, const size_t size = 1000) {
 }
 
 int main() {
+    perftimer::PerfTimer timer("Write Data to disk");
     std::println("Running a simple example that creates a 1000 element kv store and shows the first 10...");
-    // Create an instance of your key-value store
 
     quickkv::KVStore store;
     populate_database(store);
 
     std::println("after fill, db size: {}", store.size());
+
+    // write the file to disk
+    auto filename = "/tmp/test.db";
+    timer.start();
+    if (store.write(filename)) {
+        timer.stop();
+        timer.show_duration();
+        std::println("wrote {} rows to file {}.", store.size(), filename);
+    } else {
+        std::println("failed to write to disk");
+    }
 
     const auto keys = store.keys();
 
