@@ -47,17 +47,17 @@ find_package(Catch2 3 REQUIRED)
 option(ENABLE_TESTS "Build tests" ON)
 if (ENABLE_TESTS)
     enable_testing()
-    add_executable(quickkv_tests
+    add_executable(unit_tests
             tests/main.cpp
             tests/quickkv_tests.cpp
     )
-    target_link_libraries(quickkv_tests PRIVATE
+    target_link_libraries(unit_tests PRIVATE
             quickkv
             spdlog::spdlog
             domainkeys
             Catch2::Catch2WithMain
     )
-    add_test(NAME quickkv_tests COMMAND quickkv_tests)
+    add_test(NAME unit_tests COMMAND unit_tests)
 endif()
 
 # Define the static library

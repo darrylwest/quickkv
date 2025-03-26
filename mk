@@ -47,7 +47,7 @@ do
         ;;
         unit|test)
             # (cd build && time make $FLAGS)
-            $root/build/quickkv_tests
+            $root/build/unit_tests
 
             shift
         ;;
