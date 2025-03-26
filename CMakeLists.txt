@@ -5,6 +5,9 @@ project(quickkv VERSION 0.3.2 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+include_directories(/usr/local/include)
+link_directories(/usr/local/lib)
+
 # Download CPM.cmake if not present
 set(CPM_DOWNLOAD_VERSION 0.27.2)
 set(CPM_DOWNLOAD_LOCATION "${CMAKE_BINARY_DIR}/cmake/CPM_${CPM_DOWNLOAD_VERSION}.cmake")
@@ -47,11 +50,11 @@ if (ENABLE_TESTS)
     add_executable(quickkv_tests
             tests/main.cpp
             tests/quickkv_tests.cpp
-            tests/keys_tests.cpp
     )
     target_link_libraries(quickkv_tests PRIVATE
             quickkv
             spdlog::spdlog
+            domainkeys
             Catch2::Catch2WithMain
     )
     add_test(NAME quickkv_tests COMMAND quickkv_tests)
@@ -59,18 +62,18 @@ endif()
 
 # Define the static library
 add_library(quickkv STATIC
-        src/keys.cpp
-        src/quickkv.cpp
+    src/quickkv.cpp
 )
 
 target_link_libraries(quickkv PUBLIC
-        nlohmann_json::nlohmann_json
-        spdlog::spdlog
+    nlohmann_json::nlohmann_json
+    domainkeys
+    spdlog::spdlog
 )
 
 target_include_directories(quickkv PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
 )
 
 # Add examples
@@ -81,7 +84,7 @@ foreach(EXAMPLE_SOURCE ${EXAMPLE_SOURCES})
     add_executable(${EXAMPLE_NAME} ${EXAMPLE_SOURCE})
 
     set_target_properties(${EXAMPLE_NAME} PROPERTIES
-            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/examples"
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/examples"
     )
 
     target_link_libraries(${EXAMPLE_NAME} PRIVATE quickkv)
@@ -90,22 +93,22 @@ endforeach()
 # Installation rules
 install(DIRECTORY include/ DESTINATION include)
 install(TARGETS quickkv
-        EXPORT quickkvTargets
-        ARCHIVE DESTINATION lib
-        LIBRARY DESTINATION lib
-        RUNTIME DESTINATION bin
+    EXPORT quickkvTargets
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
 )
 
 # Export the library for other CMake projects
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
-        "${CMAKE_CURRENT_BINARY_DIR}/quickkvConfigVersion.cmake"
-        VERSION ${PROJECT_VERSION}
-        COMPATIBILITY AnyNewerVersion
+    "${CMAKE_CURRENT_BINARY_DIR}/quickkvConfigVersion.cmake"
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY AnyNewerVersion
 )
 install(FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/quickkvConfigVersion.cmake"
-        DESTINATION lib/cmake/quickkv
+    "${CMAKE_CURRENT_BINARY_DIR}/quickkvConfigVersion.cmake"
+    DESTINATION lib/cmake/quickkv
 )
 
 
