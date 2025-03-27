@@ -46,8 +46,10 @@ is zero, then no data is available; if the command does not take data, a value i
 * set key value -> ok or err
 * get key -> value or error
 * delete key - ok or err
-* search filter
-* keys filter
-* last n
+* search filter -> values that match the filter
+* keys filter -> keys that match the filter
+* last n -> last n records
+* read filepath -> ok or err
+* write filepath -> ok or err
 
-###### 2025.03.24 | dpw
+###### 2025.03.27 | dpw

@@ -25,7 +25,7 @@ using Func = std::function<T>;
 template<typename T>
 using Optional = std::optional<T>;
 
-constexpr auto VERSION = "0.3.8.106";
+constexpr auto VERSION = "0.3.8.107";
 namespace quickkv {
     constexpr StrView get_version() { return VERSION; }
 
@@ -65,9 +65,10 @@ namespace quickkv {
         SortedMap last(size_t count = 1) const;
 
         // Thread-safe keys method with optional filter function
+        // returns a new Vec<Str> of keys as a copy.
         Vec<Str> keys(const FilterFunc &filter = all_keys) const;
 
-        // search with FilterFunc returns a SortedMap
+        // search with FilterFunc returns a SortedMap of key/value pairs that match the filter
         SortedMap search(const FilterFunc &filter = all_keys) const;
 
         // return the current database size

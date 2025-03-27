@@ -71,6 +71,9 @@ target_link_libraries(quickkv PUBLIC
     spdlog::spdlog
 )
 
+# Enable position-independent code for security and portability
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 target_include_directories(quickkv PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>

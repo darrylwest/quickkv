@@ -78,7 +78,7 @@ namespace quickkv {
     }
 
     // Thread-safe keys method with optional filter; returns sorted vector
-    // returns a new Vec<Str> as a copy.
+    // returns a new Vec<Str> of keys as a copy.
     Vec<Str> KVStore::keys(const FilterFunc &filter) const {
         Vec<Str> key_list;
 
