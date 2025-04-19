@@ -27,16 +27,16 @@ _  __ `/  / / /_  /_  ___/_  //_/    __  //_/_ | / /
 
 ## Backing Database
 
-* file system
-* redis
-* sqlite3
-* postgress
+* [x] file system
+* [ ] redis
+* [ ] sqlite3
+* [ ] postgress
 
 ## Interface
 
-* direct, in-project
-* unix sockets (rpc like interface)
-* tcp sockets (rpc like interface)
+* [x] direct, in-project
+* [ ] unix sockets (rpc like interface)
+* [ ] tcp sockets (rpc like interface)
 
 ### RPC Interface
 
@@ -46,10 +46,10 @@ is zero, then no data is available; if the command does not take data, a value i
 * set key value -> ok or err
 * get key -> value or error
 * delete key - ok or err
-* search filter -> values that match the filter
-* keys filter -> keys that match the filter
-* last n -> last n records
+* search filter -> keys that match the filter; returns std::map<key, value>`
+* keys filter -> keys that match the filter; returns std::vector<keys>
+* last n -> last n records; returns std::map
 * read filepath -> ok or err
 * write filepath -> ok or err
 
-###### 2025.03.27 | dpw
+###### 2025.04.38 | dpw
