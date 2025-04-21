@@ -18,7 +18,7 @@ int main() {
     std::println("new db size: {}", store.size());
 
     store.set_default_path("data/data-file.db");
-    // std::println("set the default file path: {}", store.get_default_path().);
+    std::println("set the default file path: {}", store.get_default_path().string());
 
     timer.start();
     if (store.read(store.get_default_path()) && store.size() == 1000) {
