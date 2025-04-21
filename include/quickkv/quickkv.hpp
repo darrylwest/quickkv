@@ -25,7 +25,7 @@ using Func = std::function<T>;
 template<typename T>
 using Optional = std::optional<T>;
 
-constexpr auto VERSION = "0.3.9.108";
+constexpr auto VERSION = "0.4.1.110";
 namespace quickkv {
     constexpr StrView get_version() { return VERSION; }
 
@@ -39,11 +39,14 @@ namespace quickkv {
 
     // a lambda to pass to KBStore::keys() (the default)
     static FilterFunc all_keys = [](const KeyType &) { return true; };
+    constexpr auto DEFAULT_PATH = "data/store.db";
+
 
     struct KVStore {
     private:
         std::map<Str, Str> data;
         mutable std::mutex mtx; // mutable to allow locking in const methods
+        FilePath default_path = DEFAULT_PATH;
 
     public:
         // Thread-safe set method; inserts or updates the key/value pair; true if
@@ -75,10 +78,16 @@ namespace quickkv {
         size_t size() const;
 
         // read from file to populate database; optionally clear the store first
-        bool read(const FilePath &path, bool clear = false);
+        bool read(const FilePath &path = DEFAULT_PATH, bool clear = false);
 
         // save the current database to file
-        bool write(const FilePath &path) const;
+        bool write(const FilePath &path = DEFAULT_PATH) const;
+
+        // return the default path
+        FilePath get_default_path() const { return default_path; }
+
+        // set the default path
+        void set_default_path(const FilePath &path) { default_path = path; };
 
     }; // struct database
 

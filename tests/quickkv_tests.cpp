@@ -24,7 +24,7 @@ TEST_CASE("Quick KV Tests", "[quickkv][version]") {
     auto vers = quickkv::get_version();
     std::println("Version: {}", vers);
 
-    REQUIRE(vers.starts_with("0.3."));
+    REQUIRE(vers.starts_with("0.4."));
 }
 
 TEST_CASE("Quick KV Tests", "[quickkv][set_get]") {
@@ -159,6 +159,21 @@ TEST_CASE("KVStore Tests", "[database][write_database]") {
     quickkv::KVStore xstore;
     xstore.read(path);
     REQUIRE(xstore.size() == xstore.size());
+
+    helpers::remove_temp_path(path);
+}
+
+TEST_CASE("KVStore tests", "[database][read,write,default databae]") {
+    quickkv::KVStore store;
+    REQUIRE(store.size() == 0);
+    size_t size = 20;
+    populate_database(store, size);
+    REQUIRE(store.size() == size);
+
+    const auto path = helpers::create_temp_path("store-write-test_");
+    store.set_default_path(path);
+
+    REQUIRE(store.get_default_path() == path);
 
     helpers::remove_temp_path(path);
 }

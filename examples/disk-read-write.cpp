@@ -17,8 +17,11 @@ int main() {
     quickkv::KVStore store;
     std::println("new db size: {}", store.size());
 
+    store.set_default_path("data/data-file.db");
+    // std::println("set the default file path: {}", store.get_default_path().);
+
     timer.start();
-    if (store.read("data/data-file.db") && store.size() == 1000) {
+    if (store.read(store.get_default_path()) && store.size() == 1000) {
         timer.stop();
         timer.show_duration();
         std::println("new size: {}", store.size());
