@@ -51,12 +51,6 @@ do
 
             shift
         ;;
-        run)
-            (cd build && make $FLAGS)
-            $root/build/$project
-
-            shift
-        ;;
         run-data)
             (cd build && make $FLAGS)
             export TESTING=true
@@ -85,7 +79,7 @@ do
 
             exit 0
         ;;
-        exam*)
+        run|exam*)
             for f in ./build/examples/*
             do
                 ./$f

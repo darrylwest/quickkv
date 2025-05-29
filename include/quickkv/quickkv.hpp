@@ -25,8 +25,8 @@ using Func = std::function<T>;
 template<typename T>
 using Optional = std::optional<T>;
 
-constexpr auto VERSION = "0.4.1.110";
 namespace quickkv {
+    constexpr auto VERSION = "0.5.1.111";
     constexpr StrView get_version() { return VERSION; }
 
     using KeyType = Str;
