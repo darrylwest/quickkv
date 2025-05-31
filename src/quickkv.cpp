@@ -8,11 +8,20 @@
 #include <ranges>
 #include <spdlog/spdlog.h>
 #include <sstream>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
+#include <random>
 
 /*
  * create a k/v compatible with future redis integration
  */
 namespace quickkv {
+    // Seed the random number generator
+    std::random_device rdev;
+    std::mt19937 generator(rdev());
+
     // append the key/value to the file; throws on error; returns the number of
     // bytes written
     void append_key_value(const FilePath &path, const KeyType &key, const Str &value) {
@@ -98,6 +107,20 @@ namespace quickkv {
         std::ranges::copy_if(data, std::inserter(map, map.end()), [&](const auto &pair) { return filter(pair.first); });
 
         return map;
+    }
+
+    std::pair<KeyType, Str> KVStore::random() const {
+        std::lock_guard<std::mutex> lock(mtx);
+        const auto pairs = data | std::views::all;
+        const Vec<std::pair<KeyType, Str>> vec(pairs.begin(), pairs.end());
+
+
+        std::uniform_int_distribution<> distribution(0, vec.size() - 1);
+
+        // Get a random index
+        const int n = distribution(generator);
+
+        return vec[n];
     }
 
     size_t KVStore::size() const { return data.size(); }

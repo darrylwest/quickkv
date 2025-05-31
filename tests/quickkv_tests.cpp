@@ -104,8 +104,30 @@ TEST_CASE("KVStore Tests", "[quickkv][keys]") {
 }
 
 TEST_CASE("KVStore Tests", "[quickkv][last_n]") {
-    // TODO implement
-    REQUIRE(true);
+    quickkv::KVStore store;
+    REQUIRE(store.size() == 0);
+    size_t size = 100;
+    populate_database(store, size);
+    REQUIRE(store.size() == size);
+
+    const auto map = store.last(10);
+    REQUIRE(map.size() == 10);
+}
+
+TEST_CASE("KVStore Tests", "[quickkv][random]") {
+    quickkv::KVStore store;
+    REQUIRE(store.size() == 0);
+    size_t size = 100;
+    populate_database(store, size);
+    REQUIRE(store.size() == size);
+
+    for (int i = 0; i < 10; i++) {
+        const auto pair = store.random();
+        spdlog::debug("random key: {} value: {}", pair.first, pair.second);
+
+        REQUIRE(pair.first.size()  > 10);
+        REQUIRE(pair.second.size() > 4);
+    }
 }
 
 TEST_CASE("KVStore Tests", "[quickkv][search]") {
