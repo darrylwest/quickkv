@@ -51,5 +51,6 @@ is zero, then no data is available; if the command does not take data, a value i
 * last n -> last n records; returns std::map
 * read filepath -> ok or err
 * write filepath -> ok or err
+* random() -> std::pair<key, value>
 
-###### 2025.04.38 | dpw
+###### 2025.05.31 | dpw
