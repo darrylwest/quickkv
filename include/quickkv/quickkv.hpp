@@ -26,7 +26,7 @@ template<typename T>
 using Optional = std::optional<T>;
 
 namespace quickkv {
-    constexpr auto VERSION = "0.5.2.112";
+    constexpr auto VERSION = "0.5.3.113";
     constexpr StrView get_version() { return VERSION; }
 
     using KeyType = Str;
@@ -78,10 +78,10 @@ namespace quickkv {
         size_t size() const;
 
         // read from file to populate database; optionally clear the store first
-        bool read(const FilePath &path = DEFAULT_PATH, bool clear = false);
+        bool read(const FilePath &path = DEFAULT_PATH, bool clear = false, const Str &pw = "");
 
         // save the current database to file
-        bool write(const FilePath &path = DEFAULT_PATH) const;
+        bool write(const FilePath &path = DEFAULT_PATH, const Str &pw = "") const;
 
         // return the default path
         FilePath get_default_path() const { return default_path; }

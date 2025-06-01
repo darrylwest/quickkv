@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 #include <random>
+#include <unistd.h>
 
 /*
  * create a k/v compatible with future redis integration
@@ -34,6 +35,7 @@ namespace quickkv {
         }
 
         file << key << "=" << value << '\n';
+
         file.close();
     }
 
@@ -126,7 +128,7 @@ namespace quickkv {
     size_t KVStore::size() const { return data.size(); }
 
     // Thread-safe read from file
-    bool KVStore::read(const FilePath &path, bool clear) {
+    bool KVStore::read(const FilePath &path, bool clear, const Str &pw) {
         std::lock_guard<std::mutex> lock(mtx);
         std::ifstream infile(path);
         if (!infile.is_open()) {
@@ -144,22 +146,32 @@ namespace quickkv {
             KeyType key;
             Str value;
             if (std::getline(iss, key, '=') && std::getline(iss, value)) {
-                data[key] = value;
+                if (pw.empty()) {
+                    data[key] = value;
+                } else {
+                    // TODO decrypt the value
+                }
             }
         }
+
         return true;
     }
 
     // Thread-safe dump/save to file
-    bool KVStore::write(const FilePath &path) const {
+    bool KVStore::write(const FilePath &path, const Str &pw) const {
         std::lock_guard<std::mutex> lock(mtx);
         std::ofstream outfile(path);
         if (!outfile.is_open()) {
             return false;
         }
+
         for (const auto &[key, value]: data) {
-            outfile << key << "=" << value << "\n";
-        }
+            if (pw.empty()) {
+                outfile << key << "=" << value << "\n";
+            } else {
+                // TODO encrypt the value
+            }
+    }
         return true;
     }
 
