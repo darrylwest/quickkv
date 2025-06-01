@@ -93,18 +93,40 @@ TEST_CASE("KVStore Tests", "[quickkv][get_bad_key]") {
 }
 
 TEST_CASE("KVStore Tests", "[quickkv][keys]") {
+    spdlog::set_level(spdlog::level::debug);
     quickkv::KVStore store;
     REQUIRE(store.size() == 0);
-    size_t size = 50;
-    populate_database(store, size);
-    REQUIRE(store.size() == size);
+
+    perftimer::PerfTimer timer("Keys Timer");
+    timer.start();
+    store.read("data/contact-list.db");
+    timer.stop();
+    spdlog::debug("read took: {}, size: {}", timer.get_seconds(), store.size());
+
+    // find all the keys
+    timer.start();
     auto keys = store.keys();
-    REQUIRE(keys.size() == size);
+    timer.stop();
+    spdlog::debug("all keys took: {}", timer.get_seconds());
+
+    REQUIRE(keys.size() == store.size());
 
     for (const auto& key : keys) {
         auto value = store.get(key);
         REQUIRE(value);
     }
+
+    quickkv::FilterFunc key_filter = [](const Str& key) {
+        return key.starts_with("cony");
+    };
+
+    timer.start();
+    keys = store.keys(key_filter);
+    timer.stop();
+    spdlog::debug("filtered keys took: {}, size: {}", timer.get_seconds(), keys.size());
+    REQUIRE(keys.size() == 41);
+
+    spdlog::set_level(spdlog::level::critical);
 }
 
 TEST_CASE("KVStore Tests", "[quickkv][last_n]") {
@@ -134,7 +156,7 @@ TEST_CASE("KVStore Tests", "[quickkv][random]") {
     }
 }
 
-TEST_CASE("KVStore Tests", "[quickkv][search][names]") {
+TEST_CASE("KVStore Tests", "[quickkv][search]") {
     spdlog::set_level(spdlog::level::warn);
 
     perftimer::PerfTimer timer("Search Timer");

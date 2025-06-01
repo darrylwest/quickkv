@@ -41,9 +41,7 @@ namespace quickkv {
     }
 
     bool read_current_data(KVStore &store) {
-        // TODO read from configuration, all database files
-        Str location = "cottage";
-        const FilePath path = "data/temperature/current." + location + ".store";
+        const FilePath path = store.get_default_path();
 
         spdlog::info("read current data from {}", path.string());
         store.read(path, false);
