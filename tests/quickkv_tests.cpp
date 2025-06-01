@@ -6,8 +6,12 @@
 #include <catch2/catch_all.hpp>  // For Catch2 v3
 #include <filesystem>
 #include <print>
+#include <vendor/perftimer.hpp>
+#include <nlohmann/json.hpp>
 
 #include "test_helpers.hpp"
+
+using json = nlohmann::json;
 
 void populate_database(quickkv::KVStore& store, const size_t size = 100) {
 
@@ -130,9 +134,65 @@ TEST_CASE("KVStore Tests", "[quickkv][random]") {
     }
 }
 
-TEST_CASE("KVStore Tests", "[quickkv][search]") {
-    // TODO implement
-    REQUIRE(true);
+TEST_CASE("KVStore Tests", "[quickkv][search][names]") {
+    spdlog::set_level(spdlog::level::warn);
+
+    perftimer::PerfTimer timer("Search Timer");
+
+    // open a known database and search for an item
+    quickkv::KVStore store;
+    REQUIRE(store.size() == 0);
+    store.read("data/contact-list.db");
+    REQUIRE(store.size() == 2000);
+
+    {
+        timer.start();
+        // search for all returns a SortedMap
+        const auto all = store.search();
+        REQUIRE(all.size() == store.size());
+        timer.stop();
+        spdlog::debug("all search took: {}", timer.get_seconds());
+    }
+
+    // find all people with a first name of Sally
+    Str name = R"("first_name":"Sally")";
+    quickkv::FilterFunc name_filter = [&name](const Str& value) {
+        return value.contains(name);
+    };
+
+    timer.start();
+    const auto sally_map = store.search(name_filter);
+    timer.stop();
+    spdlog::debug("sally search took: {}", timer.get_seconds());
+
+    for (const auto& [k, v] : sally_map) {
+        spdlog::debug("sally key: {} value: {}", k, v);
+    }
+    REQUIRE(sally_map.size() == 1);
+
+    // find all records with a first/last name that contains Tom
+    name = R"(name":"Tom)";
+    timer.start();
+    const auto toms_map = store.search(name_filter);
+    timer.stop();
+    spdlog::debug("toms search took: {}", timer.get_seconds());
+    for (const auto& [k, v] : toms_map) {
+        spdlog::debug("toms key: {} value: {}", k, v);
+    }
+    REQUIRE(toms_map.size() == 9);
+
+    // search for emails where google.com is the domain
+    name = "@google.com";
+    timer.start();
+    const auto google_map = store.search(name_filter);
+    timer.stop();
+    spdlog::debug("google search took: {}", timer.get_seconds());
+    for (const auto& [k, v] : google_map) {
+        spdlog::debug("google key: {} value: {}", k, v);
+    }
+    REQUIRE(google_map.size() == 21);
+
+    spdlog::set_level(spdlog::level::critical);
 }
 
 TEST_CASE("KVStore Tests", "[database][read_database]") {

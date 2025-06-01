@@ -26,7 +26,7 @@ template<typename T>
 using Optional = std::optional<T>;
 
 namespace quickkv {
-    constexpr auto VERSION = "0.5.3.114";
+    constexpr auto VERSION = "0.5.3.115";
     constexpr StrView get_version() { return VERSION; }
 
     using KeyType = Str;
@@ -38,7 +38,7 @@ namespace quickkv {
     void append_key_value(const FilePath &filename, const KeyType &key, const Str &value, const Str &pw = "");
 
     // a lambda to pass to KBStore::keys() (the default)
-    static FilterFunc all_keys = [](const KeyType &) { return true; };
+    static FilterFunc all_filter = [](const Str &) { return true; };
     constexpr auto DEFAULT_PATH = "data/store.db";
 
 
@@ -69,10 +69,10 @@ namespace quickkv {
 
         // Thread-safe keys method with optional filter function
         // returns a new Vec<Str> of keys as a copy.
-        Vec<Str> keys(const FilterFunc &filter = all_keys) const;
+        Vec<Str> keys(const FilterFunc &filter = all_filter) const;
 
-        // search with FilterFunc returns a SortedMap of key/value pairs that match the filter
-        SortedMap search(const FilterFunc &filter = all_keys) const;
+        // search with FilterFunc returns a SortedMap of key/value pairs that match the value filter
+        SortedMap search(const FilterFunc &filter = all_filter) const;
 
         // return the current database size
         size_t size() const;

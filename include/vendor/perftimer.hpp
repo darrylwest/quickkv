@@ -11,7 +11,7 @@
 #include <string>
 
 namespace perftimer {
-    constexpr auto VERSION = "0.6.4";
+    constexpr auto VERSION = "0.7.2";
 
     using Clock = std::chrono::high_resolution_clock;
     using TimePoint = std::chrono::time_point<Clock>;
@@ -32,29 +32,42 @@ namespace perftimer {
         PerfTimer(const std::string timer_name) : name(timer_name) { };
 
         // log messages in a buffered way to delay console log delays. use like cout << "message"
+        // use log.str() to read the contents. 
+        // @see https://en.cppreference.com/w/cpp/io/basic_ostringstream
         std::ostringstream log;
 
         // set the show precision, defaults to 9 places
         int prec = 9;
 
-        // start or re-start the timer; invoke end to capture the duration
+        auto get_name() const {
+            return name;
+        }
+
+        // start or re-start the timer and set t0
         void start() {
             t0 = Clock::now();
         }
 
+        // stop the clock and set t1
         void stop() {
             t1 = Clock::now();
         }
 
 
         // returns the nanos between t0 and t1
-        auto get_duration() {
+        auto get_duration() const {
             const std::chrono::duration<double, std::nano> dur = t1 - t0;
             return dur;
         }
 
-        // show the duration
-        void show_duration(const std::string& message = ": process took: ") {
+        // returns the seconds as a dowble between t0 and t1
+        auto get_seconds() const {
+            const std::chrono::duration<double, std::nano> dur = t1 - t0;
+            return dur.count() / billions;
+        }
+
+        // show the timer name, a message and the duration between t0 and t1
+        void show_duration(const std::string& message = ": process took: ") const {
             auto dur = get_duration();
             if (dur.count() > billions) {
                 std::cout << name << message << std::setprecision(prec) << dur.count() / billions << " seconds" << '\n';

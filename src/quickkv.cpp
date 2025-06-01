@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 #include <random>
-#include <unistd.h>
 
 /*
  * create a k/v compatible with future redis integration
@@ -34,7 +33,9 @@ namespace quickkv {
             throw FileException(msg);
         }
 
-        file << key << "=" << value << '\n';
+        if (pw.empty()) {
+            file << key << "=" << value << '\n';
+        }
 
         file.close();
     }
@@ -106,7 +107,7 @@ namespace quickkv {
 
         std::lock_guard<std::mutex> lock(mtx);
 
-        std::ranges::copy_if(data, std::inserter(map, map.end()), [&](const auto &pair) { return filter(pair.first); });
+        std::ranges::copy_if(data, std::inserter(map, map.end()), [&](const auto &pair) { return filter(pair.second); });
 
         return map;
     }
@@ -116,13 +117,12 @@ namespace quickkv {
         const auto pairs = data | std::views::all;
         const Vec<std::pair<KeyType, Str>> vec(pairs.begin(), pairs.end());
 
-
         std::uniform_int_distribution<> distribution(0, vec.size() - 1);
 
         // Get a random index
-        const int n = distribution(generator);
+        const int idx = distribution(generator);
 
-        return vec[n];
+        return vec[idx];
     }
 
     size_t KVStore::size() const { return data.size(); }
