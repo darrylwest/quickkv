@@ -26,7 +26,7 @@ template<typename T>
 using Optional = std::optional<T>;
 
 namespace quickkv {
-    constexpr auto VERSION = "0.5.3.113";
+    constexpr auto VERSION = "0.5.3.114";
     constexpr StrView get_version() { return VERSION; }
 
     using KeyType = Str;
@@ -35,7 +35,7 @@ namespace quickkv {
     using SortedMap = std::map<Str, Str>;
 
     // append the key/value to the file; throws FileException on error
-    void append_key_value(const FilePath &filename, const KeyType &key, const Str &value);
+    void append_key_value(const FilePath &filename, const KeyType &key, const Str &value, const Str &pw = "");
 
     // a lambda to pass to KBStore::keys() (the default)
     static FilterFunc all_keys = [](const KeyType &) { return true; };

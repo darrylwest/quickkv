@@ -25,7 +25,7 @@ namespace quickkv {
 
     // append the key/value to the file; throws on error; returns the number of
     // bytes written
-    void append_key_value(const FilePath &path, const KeyType &key, const Str &value) {
+    void append_key_value(const FilePath &path, const KeyType &key, const Str &value, const Str &pw) {
         std::ofstream file(path, std::ios::app);
 
         if (!file.is_open()) {
