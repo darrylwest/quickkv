@@ -110,6 +110,7 @@ namespace quickkv {
         return map;
     }
 
+    // return a random key/value pair
     std::pair<KeyType, Str> KVStore::random() const {
         std::lock_guard<std::mutex> lock(mtx);
         const auto pairs = data | std::views::all;
@@ -123,6 +124,7 @@ namespace quickkv {
         return vec[idx];
     }
 
+    // return the current store size
     size_t KVStore::size() const { return data.size(); }
 
     // Thread-safe read from file
@@ -169,7 +171,8 @@ namespace quickkv {
             } else {
                 // TODO encrypt the value
             }
-    }
+        }
+
         return true;
     }
 

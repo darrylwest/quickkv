@@ -26,7 +26,7 @@ template<typename T>
 using Optional = std::optional<T>;
 
 namespace quickkv {
-    constexpr auto VERSION = "0.5.4.116";
+    constexpr auto VERSION = "0.5.5.117";
     constexpr StrView get_version() { return VERSION; }
 
     using KeyType = Str;
@@ -94,7 +94,7 @@ namespace quickkv {
     }; // struct database
 
     // read data from the default path without clearing the store
-    static bool read_current_data(KVStore &store);
+    bool read_current_data(KVStore &store);
 
     // Base exception class
     class ServiceException : public std::exception {

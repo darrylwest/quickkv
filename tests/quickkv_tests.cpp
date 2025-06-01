@@ -31,6 +31,15 @@ TEST_CASE("Quick KV Tests", "[quickkv][version]") {
     REQUIRE(vers.starts_with("0.5."));
 }
 
+TEST_CASE("Quick KV Tests", "[quickkv][read_current_version]") {
+    quickkv::KVStore store;
+    store.set_default_path("data/contact-list.db");
+    REQUIRE(store.size() == 0);
+
+    REQUIRE(quickkv::read_current_data(store));
+    REQUIRE(store.size() == 2000);
+}
+
 TEST_CASE("Quick KV Tests", "[quickkv][set_get]") {
     quickkv::KVStore store;
     REQUIRE(store.size() == 0);
