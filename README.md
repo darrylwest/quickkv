@@ -53,4 +53,4 @@ is zero, then no data is available; if the command does not take data, a value i
 * write filepath -> ok or err
 * random() -> std::pair<key, value>
 
-###### 2025.05.31 | dpw
+###### 2025.06.01 | dpw

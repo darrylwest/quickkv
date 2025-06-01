@@ -93,7 +93,7 @@ TEST_CASE("KVStore Tests", "[quickkv][get_bad_key]") {
 }
 
 TEST_CASE("KVStore Tests", "[quickkv][keys]") {
-    spdlog::set_level(spdlog::level::debug);
+    spdlog::set_level(spdlog::level::critical);
     quickkv::KVStore store;
     REQUIRE(store.size() == 0);
 
