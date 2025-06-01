@@ -93,8 +93,8 @@ namespace quickkv {
 
     }; // struct database
 
-    // open and database files (reference config)
-    bool read_current_data(KVStore &store);
+    // read data from the default path without clearing the store
+    static bool read_current_data(KVStore &store);
 
     // Base exception class
     class ServiceException : public std::exception {
