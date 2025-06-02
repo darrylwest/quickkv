@@ -152,6 +152,14 @@ TEST_CASE("KVStore Tests", "[quickkv][last_n]") {
 TEST_CASE("KVStore Tests", "[quickkv][random]") {
     quickkv::KVStore store;
     REQUIRE(store.size() == 0);
+
+    try {
+        const auto pair = store.random();
+        REQUIRE(false);
+    } catch (const std::exception& ex) {
+        spdlog::debug("Caught exception: {}", ex.what());
+        REQUIRE(true);
+    }
     size_t size = 100;
     populate_database(store, size);
     REQUIRE(store.size() == size);
