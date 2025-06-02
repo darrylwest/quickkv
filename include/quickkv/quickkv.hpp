@@ -26,7 +26,7 @@ template<typename T>
 using Optional = std::optional<T>;
 
 namespace quickkv {
-    constexpr auto VERSION = "0.5.5.117";
+    constexpr auto VERSION = "0.5.6.118";
     constexpr StrView get_version() { return VERSION; }
 
     using KeyType = Str;
@@ -49,6 +49,8 @@ namespace quickkv {
         FilePath default_path = DEFAULT_PATH;
 
     public:
+        KVStore() = default;
+
         // Thread-safe set method; inserts or updates the key/value pair; true if
         // inserted
         bool set(const KeyType &key, const Str &value);
