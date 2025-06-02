@@ -24,17 +24,13 @@ namespace quickkv {
 
     // append the key/value to the file; throws on error; returns the number of
     // bytes written
-    void append_key_value(const FilePath &path, const KeyType &key, const Str &value, const Str &pw) {
+    void append_key_value(const FilePath &path, const KeyType &key, const Str &value) {
         std::ofstream file(path, std::ios::app);
 
         if (!file.is_open()) {
             const auto msg = "Error in database::append_key_value(); can't open file: " + path.string();
             spdlog::error(msg);
             throw FileException(msg);
-        }
-
-        if (pw.empty()) {
-            file << key << "=" << value << '\n';
         }
 
         file.close();
@@ -132,7 +128,7 @@ namespace quickkv {
     size_t KVStore::size() const { return data.size(); }
 
     // Thread-safe read from file
-    bool KVStore::read(const FilePath &path, bool clear, const Str &pw) {
+    bool KVStore::read(const FilePath &path, bool clear) {
         std::lock_guard<std::mutex> lock(mtx);
         std::ifstream infile(path);
         if (!infile.is_open()) {
@@ -150,11 +146,7 @@ namespace quickkv {
             KeyType key;
             Str value;
             if (std::getline(iss, key, '=') && std::getline(iss, value)) {
-                if (pw.empty()) {
-                    data[key] = value;
-                } else {
-                    // TODO decrypt the value
-                }
+                data[key] = value;
             }
         }
 
@@ -162,7 +154,7 @@ namespace quickkv {
     }
 
     // Thread-safe dump/save to file
-    bool KVStore::write(const FilePath &path, const Str &pw) const {
+    bool KVStore::write(const FilePath &path) const {
         std::lock_guard<std::mutex> lock(mtx);
         std::ofstream outfile(path);
         if (!outfile.is_open()) {
@@ -170,11 +162,7 @@ namespace quickkv {
         }
 
         for (const auto &[key, value]: data) {
-            if (pw.empty()) {
-                outfile << key << "=" << value << "\n";
-            } else {
-                // TODO encrypt the value
-            }
+            outfile << key << "=" << value << "\n";
         }
 
         return true;
