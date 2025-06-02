@@ -113,6 +113,10 @@ namespace quickkv {
     // return a random key/value pair
     std::pair<KeyType, Str> KVStore::random() const {
         std::lock_guard<std::mutex> lock(mtx);
+        if (data.size() == 0) {
+            throw ServiceException("Database is empty");
+        }
+
         const auto pairs = data | std::views::all;
         const Vec<std::pair<KeyType, Str>> vec(pairs.begin(), pairs.end());
 
