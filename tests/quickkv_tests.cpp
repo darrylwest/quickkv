@@ -28,24 +28,17 @@ TEST_CASE("Quick KV Tests", "[quickkv][version]") {
     auto vers = quickkv::get_version();
     std::println("Version: {}", vers);
 
-    REQUIRE(vers.starts_with("0.6."));
-}
-
-TEST_CASE("Quick KV Tests", "[quickkv][read_current_version]") {
-    quickkv::KVStore store;
-    store.set_default_path("data/contact-list.db");
-    REQUIRE(store.size() == 0);
-
-    REQUIRE(quickkv::read_current_data(store));
-    REQUIRE(store.size() == 2000);
+    REQUIRE(vers.starts_with("0.7."));
 }
 
 TEST_CASE("Quick KV Tests", "[quickkv][set_get]") {
     quickkv::KVStore store;
     REQUIRE(store.size() == 0);
+    REQUIRE(store.is_dirty() == false);
     size_t size = 10;
     populate_database(store, size);
     REQUIRE(store.size() == size);
+    REQUIRE(store.is_dirty());
 
     auto keys = store.keys();
 
@@ -77,7 +70,8 @@ TEST_CASE("Quick KV Tests", "[quickkv][set_get]") {
         REQUIRE(return_value == std::to_string(new_value));
         REQUIRE(std::to_string(new_value) != value);
     }
-    REQUIRE(true);
+
+    REQUIRE(store.is_dirty());
 }
 
 TEST_CASE("KVStore Tests", "[quickkv][get_bad_key]") {
@@ -160,6 +154,7 @@ TEST_CASE("KVStore Tests", "[quickkv][random]") {
         spdlog::debug("Caught exception: {}", ex.what());
         REQUIRE(true);
     }
+
     size_t size = 100;
     populate_database(store, size);
     REQUIRE(store.size() == size);
@@ -181,8 +176,11 @@ TEST_CASE("KVStore Tests", "[quickkv][search]") {
     // open a known database and search for an item
     quickkv::KVStore store;
     REQUIRE(store.size() == 0);
+    REQUIRE(store.is_dirty() == false);
+
     store.read("data/contact-list.db");
     REQUIRE(store.size() == 2000);
+    REQUIRE(store.is_dirty() == false);
 
     {
         timer.start();

@@ -21,7 +21,6 @@ namespace quickkv {
     // Seed the random number generator
     std::random_device rdev;
     std::mt19937 generator(rdev());
-    bool is_dirty = false;
 
     // append the key/value to the file; throws on error; returns the number of
     // bytes written
@@ -41,25 +40,15 @@ namespace quickkv {
         file.close();
     }
 
-    bool read_current_data(KVStore &store) {
-        const FilePath path = store.get_default_path();
-
-        spdlog::debug("read current data from {}", path.string());
-        store.read(path, false);
-        spdlog::debug("store size: {}", store.size());
-
-        return true;
-    }
-
     bool KVStore::set(const KeyType &key, const Str &value) {
         std::lock_guard<std::mutex> lock(mtx);
         if (data.contains(key)) {
             data[key] = value;
-            is_dirty = true;
+            dirty = true;
             return false;
         } else {
             data.emplace_hint(data.end(), key, value);
-            is_dirty = true;
+            dirty = true;
             return true;
         }
     }
@@ -116,7 +105,7 @@ namespace quickkv {
     // return a random key/value pair
     std::pair<KeyType, Str> KVStore::random() const {
         std::lock_guard<std::mutex> lock(mtx);
-        if (data.size() == 0) {
+        if (data.empty()) {
             throw ServiceException("Database is empty");
         }
 
@@ -136,6 +125,7 @@ namespace quickkv {
 
     // Thread-safe read from file
     bool KVStore::read(const FilePath &path, bool clear) {
+        bool currently_dirty = dirty;
         std::lock_guard<std::mutex> lock(mtx);
         std::ifstream infile(path);
         if (!infile.is_open()) {
@@ -157,11 +147,14 @@ namespace quickkv {
             }
         }
 
+        // restore the dirty flag
+        dirty = currently_dirty;
+
         return true;
     }
 
     // Thread-safe dump/save to file
-    bool KVStore::write(const FilePath &path) const {
+    bool KVStore::write(const FilePath &path) {
         std::lock_guard<std::mutex> lock(mtx);
         std::ofstream outfile(path);
         if (!outfile.is_open()) {
@@ -172,14 +165,17 @@ namespace quickkv {
             outfile << key << "=" << value << "\n";
         }
 
-        is_dirty = false;
+        dirty = false;
         return true;
     }
 
+    // dirty flag
+    bool KVStore::is_dirty() { return dirty; }
+
     KVStore::~KVStore() {
-        if (is_dirty) {
+        if (dirty) {
             auto path = get_default_path();
-            spdlog::info("KVStore destructor, dirty: {}, writing to file: {}", is_dirty, path.string());
+            spdlog::info("KVStore destructor, dirty: {}, writing to file: {}", dirty, path.string());
             // write(path);
         }
     }

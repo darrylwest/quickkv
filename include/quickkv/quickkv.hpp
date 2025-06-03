@@ -26,7 +26,7 @@ template<typename T>
 using Optional = std::optional<T>;
 
 namespace quickkv {
-    constexpr auto VERSION = "0.6.1.122";
+    constexpr auto VERSION = "0.7.1.124";
     constexpr StrView get_version() { return VERSION; }
 
     using KeyType = Str;
@@ -47,6 +47,7 @@ namespace quickkv {
         std::map<Str, Str> data;
         mutable std::mutex mtx; // mutable to allow locking in const methods
         FilePath default_path = DEFAULT_PATH;
+        bool dirty = false;
 
     public:
         KVStore() = default;
@@ -83,7 +84,7 @@ namespace quickkv {
         bool read(const FilePath &path = DEFAULT_PATH, bool clear = false);
 
         // save the current database to file
-        bool write(const FilePath &path = DEFAULT_PATH) const;
+        bool write(const FilePath &path = DEFAULT_PATH);
 
         // return the default path
         FilePath get_default_path() const { return default_path; }
@@ -91,14 +92,15 @@ namespace quickkv {
         // set the default path
         void set_default_path(const FilePath &path) { default_path = path; };
 
+        // return a random key/value pair.  throws if store is empty
         std::pair<KeyType, Str> random() const;
+
+        // return true if the current kv has changes without write or append
+        bool is_dirty();
 
         ~KVStore();
 
     }; // struct database
-
-    // read data from the default path without clearing the store
-    bool read_current_data(KVStore &store);
 
     // Base exception class
     class ServiceException : public std::exception {
