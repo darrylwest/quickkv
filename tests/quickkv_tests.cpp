@@ -300,7 +300,17 @@ TEST_CASE("KVStore tests", "[database][read,write,default databae]") {
 }
 
 TEST_CASE("KVStore Tests", "[database][append_key_value]") {
-    REQUIRE(true);
+    quickkv::KVStore store;
+    REQUIRE(store.size() == 0);
+    FilePath path = helpers::create_temp_path("store-append-test_");
+    quickkv::append_key_value(path, "12345", "22.3344");
+    REQUIRE(store.size() == 0);
+
+    store.read(path);
+
+    REQUIRE(store.get("12345") == "22.3344");
+
+    helpers::remove_temp_path(path);
 }
 
 TEST_CASE("KVStore Tests", "[database][bad_append_file]") {

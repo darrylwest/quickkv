@@ -25,6 +25,7 @@ namespace quickkv {
     // append the key/value to the file; throws on error; returns the number of
     // bytes written
     void append_key_value(const FilePath &path, const KeyType &key, const Str &value) {
+        // std::lock_guard<std::mutex> lock(mtx);
         std::ofstream file(path, std::ios::app);
 
         if (!file.is_open()) {
@@ -32,6 +33,9 @@ namespace quickkv {
             spdlog::error(msg);
             throw FileException(msg);
         }
+
+        file << key << "=" << value << "\n";
+        spdlog::info("wrote key/value: {}={}", key, value);
 
         file.close();
     }
