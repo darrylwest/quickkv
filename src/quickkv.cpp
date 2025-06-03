@@ -30,12 +30,12 @@ namespace quickkv {
 
         if (!file.is_open()) {
             const auto msg = "Error in database::append_key_value(); can't open file: " + path.string();
-            spdlog::error(msg);
+            spdlog::critical(msg);
             throw FileException(msg);
         }
 
         file << key << "=" << value << "\n";
-        spdlog::info("wrote key/value: {}={}", key, value);
+        spdlog::debug("wrote key/value: {}={}", key, value);
 
         file.close();
     }
@@ -43,9 +43,9 @@ namespace quickkv {
     bool read_current_data(KVStore &store) {
         const FilePath path = store.get_default_path();
 
-        spdlog::info("read current data from {}", path.string());
+        spdlog::debug("read current data from {}", path.string());
         store.read(path, false);
-        spdlog::info("store size: {}", store.size());
+        spdlog::debug("store size: {}", store.size());
 
         return true;
     }
@@ -140,7 +140,7 @@ namespace quickkv {
         }
 
         if (clear) {
-            spdlog::info("clearing the database prior to read");
+            spdlog::debug("clearing the database prior to read");
             data.clear();
         }
 
@@ -170,6 +170,10 @@ namespace quickkv {
         }
 
         return true;
+    }
+
+    KVStore::~KVStore() {
+        spdlog::debug("KVStore destructor");
     }
 
 } // namespace quickkv

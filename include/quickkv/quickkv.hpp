@@ -26,7 +26,7 @@ template<typename T>
 using Optional = std::optional<T>;
 
 namespace quickkv {
-    constexpr auto VERSION = "0.5.8.120";
+    constexpr auto VERSION = "0.5.9.121";
     constexpr StrView get_version() { return VERSION; }
 
     using KeyType = Str;
@@ -92,6 +92,8 @@ namespace quickkv {
         void set_default_path(const FilePath &path) { default_path = path; };
 
         std::pair<KeyType, Str> random() const;
+
+        ~KVStore();
 
     }; // struct database
 
