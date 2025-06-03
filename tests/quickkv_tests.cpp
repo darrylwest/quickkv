@@ -28,7 +28,7 @@ TEST_CASE("Quick KV Tests", "[quickkv][version]") {
     auto vers = quickkv::get_version();
     std::println("Version: {}", vers);
 
-    REQUIRE(vers.starts_with("0.5."));
+    REQUIRE(vers.starts_with("0.6."));
 }
 
 TEST_CASE("Quick KV Tests", "[quickkv][read_current_version]") {

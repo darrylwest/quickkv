@@ -21,6 +21,7 @@ namespace quickkv {
     // Seed the random number generator
     std::random_device rdev;
     std::mt19937 generator(rdev());
+    bool is_dirty = false;
 
     // append the key/value to the file; throws on error; returns the number of
     // bytes written
@@ -54,9 +55,11 @@ namespace quickkv {
         std::lock_guard<std::mutex> lock(mtx);
         if (data.contains(key)) {
             data[key] = value;
+            is_dirty = true;
             return false;
         } else {
             data.emplace_hint(data.end(), key, value);
+            is_dirty = true;
             return true;
         }
     }
@@ -169,11 +172,16 @@ namespace quickkv {
             outfile << key << "=" << value << "\n";
         }
 
+        is_dirty = false;
         return true;
     }
 
     KVStore::~KVStore() {
-        spdlog::debug("KVStore destructor");
+        if (is_dirty) {
+            auto path = get_default_path();
+            spdlog::info("KVStore destructor, dirty: {}, writing to file: {}", is_dirty, path.string());
+            // write(path);
+        }
     }
 
 } // namespace quickkv
