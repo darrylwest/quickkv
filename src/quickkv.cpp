@@ -22,24 +22,6 @@ namespace quickkv {
     std::random_device rdev;
     std::mt19937 generator(rdev());
 
-    // append the key/value to the file; throws on error; returns the number of
-    // bytes written
-    void append_key_value(const FilePath &path, const KeyType &key, const Str &value) {
-        // std::lock_guard<std::mutex> lock(mtx);
-        std::ofstream file(path, std::ios::app);
-
-        if (!file.is_open()) {
-            const auto msg = "Error in database::append_key_value(); can't open file: " + path.string();
-            spdlog::critical(msg);
-            throw FileException(msg);
-        }
-
-        file << key << "=" << value << "\n";
-        spdlog::debug("wrote key/value: {}={}", key, value);
-
-        file.close();
-    }
-
     bool KVStore::set(const KeyType &key, const Str &value) {
         std::lock_guard<std::mutex> lock(mtx);
         if (data.contains(key)) {
@@ -168,6 +150,26 @@ namespace quickkv {
         dirty = false;
         return true;
     }
+
+    // append the key/value to the file; throws on error; returns the number of
+    void KVStore::append(const KeyType &key, const Str &value) {
+        std::lock_guard<std::mutex> lock(mtx);
+        std::ofstream file(default_path, std::ios::app);
+
+        if (!file.is_open()) {
+            const auto msg = "Error in database::append_key_value(); can't open file: " + default_path.string();
+            spdlog::critical(msg);
+            throw FileException(msg);
+        }
+
+        file << key << "=" << value << "\n";
+        spdlog::debug("wrote key/value: {}={}", key, value);
+
+        dirty = false;
+
+        file.close();
+    }
+
 
     // dirty flag
     bool KVStore::is_dirty() { return dirty; }

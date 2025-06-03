@@ -34,8 +34,6 @@ namespace quickkv {
     using FilterFunc = std::function<bool(const Str &)>;
     using SortedMap = std::map<Str, Str>;
 
-    // append the key/value to the file; throws FileException on error
-    void append_key_value(const FilePath &filename, const KeyType &key, const Str &value);
 
     // a lambda to pass to KBStore::keys() (the default)
     static FilterFunc all_filter = [](const Str &) { return true; };
@@ -85,6 +83,9 @@ namespace quickkv {
 
         // save the current database to file
         bool write(const FilePath &path = DEFAULT_PATH);
+
+        // append the key/value to the default file; throws FileException on error; clears dirty flag
+        void append(const KeyType &key, const Str &value);
 
         // return the default path
         FilePath get_default_path() const { return default_path; }

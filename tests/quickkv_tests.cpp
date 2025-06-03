@@ -297,32 +297,49 @@ TEST_CASE("KVStore tests", "[database][read,write,default databae]") {
     helpers::remove_temp_path(path);
 }
 
-TEST_CASE("KVStore Tests", "[database][append_key_value]") {
-    quickkv::KVStore store;
-    REQUIRE(store.size() == 0);
+TEST_CASE("KVStore Tests", "[database][append]") {
+    quickkv::KVStore kv1;
     FilePath path = helpers::create_temp_path("store-append-test_");
-    quickkv::append_key_value(path, "12345", "22.3344");
-    REQUIRE(store.size() == 0);
+    kv1.set_default_path(path);
 
-    store.read(path);
+    REQUIRE(kv1.size() == 0);
+    REQUIRE(kv1.is_dirty() == false);
 
-    REQUIRE(store.get("12345") == "22.3344");
+    const Str key = "1234586";
+    const Str value = "my value string";
+    kv1.set(key, value);
+
+    REQUIRE(kv1.is_dirty());
+    REQUIRE(kv1.size() == 1);
+
+    kv1.append(key, value);
+    REQUIRE(kv1.is_dirty() == false);
+    REQUIRE(kv1.size() == 1);
+
+    quickkv::KVStore kv2;
+    kv2.read(path);
+    REQUIRE(kv2.is_dirty() == false);
+    REQUIRE(kv2.size() == 1);
+
+    REQUIRE(kv2.get(key) == value);
 
     helpers::remove_temp_path(path);
 }
 
 TEST_CASE("KVStore Tests", "[database][bad_append_file]") {
 
-    const auto filename = "bad-file/folder/temps/bad.db";
+    quickkv::KVStore store;
+    const FilePath path = "bad-file/folder/temps/bad.db";
+    store.set_default_path(path);
     const auto key = "12345";
     const auto sval = "22.3344";
 
-    spdlog::info("file: {} {} {}", filename, key, sval);
+    spdlog::info("file: {} {} {}", path.string(), key, sval);
 
     INFO("will throw if this operation failed");
 
     try {
-        quickkv::append_key_value(filename, key, sval);
+        store.append(key, sval);
         REQUIRE(false);
     } catch (const std::exception& e) {
         spdlog::error("{}", e.what());}
