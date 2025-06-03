@@ -4,15 +4,15 @@
 
 #include <algorithm>
 #include <fstream>
+#include <optional>
 #include <quickkv/quickkv.hpp>
+#include <random>
 #include <ranges>
 #include <spdlog/spdlog.h>
 #include <sstream>
-#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
-#include <random>
 
 /*
  * create a k/v compatible with future redis integration
@@ -79,7 +79,8 @@ namespace quickkv {
 
         std::lock_guard<std::mutex> lock(mtx);
 
-        std::ranges::copy_if(data, std::inserter(map, map.end()), [&](const auto &pair) { return filter(pair.second); });
+        std::ranges::copy_if(data, std::inserter(map, map.end()),
+                             [&](const auto &pair) { return filter(pair.second); });
 
         return map;
     }
@@ -106,10 +107,10 @@ namespace quickkv {
     size_t KVStore::size() const { return data.size(); }
 
     // Thread-safe read from file
-    bool KVStore::read(const FilePath &path, bool clear) {
+    bool KVStore::read(bool clear) {
         bool currently_dirty = dirty;
         std::lock_guard<std::mutex> lock(mtx);
-        std::ifstream infile(path);
+        std::ifstream infile(default_path);
         if (!infile.is_open()) {
             return false;
         }
@@ -136,9 +137,9 @@ namespace quickkv {
     }
 
     // Thread-safe dump/save to file
-    bool KVStore::write(const FilePath &path) {
+    bool KVStore::write() {
         std::lock_guard<std::mutex> lock(mtx);
-        std::ofstream outfile(path);
+        std::ofstream outfile(default_path);
         if (!outfile.is_open()) {
             return false;
         }

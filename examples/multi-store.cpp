@@ -26,7 +26,7 @@ std::map<std::string, std::unique_ptr<quickkv::KVStore>> create_stores() {
 
         auto ptr = std::make_unique<quickkv::KVStore>();
         ptr->set_default_path(path);
-        ptr->read(path);
+        ptr->read();
 
         stores[name] = std::move(ptr);
     }

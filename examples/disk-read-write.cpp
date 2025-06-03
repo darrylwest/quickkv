@@ -21,7 +21,7 @@ int main() {
     std::println("set the default file path: {}", store.get_default_path().string());
 
     timer.start();
-    if (store.read(store.get_default_path()) && store.size() == 1000) {
+    if (store.read() && store.size() == 1000) {
         timer.stop();
         timer.show_duration();
         std::println("new size: {}", store.size());

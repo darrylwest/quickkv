@@ -78,11 +78,11 @@ namespace quickkv {
         // return the current database size
         size_t size() const;
 
-        // read from file to populate database; optionally clear the store first
-        bool read(const FilePath &path = DEFAULT_PATH, bool clear = false);
+        // read from default resource to populate database; optionally clear the store first
+        bool read(bool clear = false);
 
-        // save the current database to file
-        bool write(const FilePath &path = DEFAULT_PATH);
+        // save the current database to external source, default path or other
+        bool write();
 
         // append the key/value to the default file; throws FileException on error; clears dirty flag
         void append(const KeyType &key, const Str &value);

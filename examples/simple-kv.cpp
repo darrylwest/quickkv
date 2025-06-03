@@ -27,8 +27,9 @@ int main() {
 
     // write the file to disk
     auto filename = "/tmp/test.db";
+    store.set_default_path(filename);
     timer.start();
-    if (store.write(filename)) {
+    if (store.write()) {
         timer.stop();
         timer.show_duration();
         std::println("wrote {} rows to file {}.", store.size(), filename);

@@ -99,10 +99,11 @@ TEST_CASE("KVStore Tests", "[quickkv][keys]") {
     spdlog::set_level(spdlog::level::critical);
     quickkv::KVStore store;
     REQUIRE(store.size() == 0);
+    store.set_default_path("data/contact-list.db");
 
     perftimer::PerfTimer timer("Keys Timer");
     timer.start();
-    store.read("data/contact-list.db");
+    store.read();
     timer.stop();
     spdlog::debug("read took: {}, size: {}", timer.get_seconds(), store.size());
 
@@ -178,7 +179,8 @@ TEST_CASE("KVStore Tests", "[quickkv][search]") {
     REQUIRE(store.size() == 0);
     REQUIRE(store.is_dirty() == false);
 
-    store.read("data/contact-list.db");
+    store.set_default_path("data/contact-list.db");
+    store.read();
     REQUIRE(store.size() == 2000);
     REQUIRE(store.is_dirty() == false);
 
@@ -245,8 +247,9 @@ TEST_CASE("KVStore Tests", "[database][read_database]") {
 
     quickkv::KVStore store;
     REQUIRE(store.size() == 0);
+    store.set_default_path(path);
 
-    bool ok = store.read(path);
+    bool ok = store.read();
     REQUIRE(ok);
     REQUIRE(store.size() == 12);
 
@@ -272,11 +275,13 @@ TEST_CASE("KVStore Tests", "[database][write_database]") {
     REQUIRE(store.size() == size);
 
     const auto path = helpers::create_temp_path("store-write-test_");
-    bool ok = store.write(path);
+    store.set_default_path(path);
+    bool ok = store.write();
     REQUIRE(ok);
 
     quickkv::KVStore xstore;
-    xstore.read(path);
+    xstore.set_default_path(path);
+    xstore.read();
     REQUIRE(xstore.size() == xstore.size());
 
     helpers::remove_temp_path(path);
@@ -317,7 +322,8 @@ TEST_CASE("KVStore Tests", "[database][append]") {
     REQUIRE(kv1.size() == 1);
 
     quickkv::KVStore kv2;
-    kv2.read(path);
+    kv2.set_default_path(path);
+    kv2.read();
     REQUIRE(kv2.is_dirty() == false);
     REQUIRE(kv2.size() == 1);
 
