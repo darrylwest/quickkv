@@ -3,6 +3,7 @@
 //
 
 #include <algorithm>
+#include <domainkeys/keys.hpp>
 #include <fstream>
 #include <optional>
 #include <quickkv/quickkv.hpp>
@@ -149,8 +150,12 @@ namespace quickkv {
         }
 
         dirty = false;
+        last_write_seconds = domainkeys::keys::now_microseconds() / 1'000'000;
+
         return true;
     }
+
+    std::time_t KVStore::get_last_write_seconds() const { return last_write_seconds; }
 
     // append the key/value to the file; throws on error; returns the number of
     void KVStore::append(const KeyType &key, const Str &value) {
@@ -170,7 +175,6 @@ namespace quickkv {
 
         file.close();
     }
-
 
     // dirty flag
     bool KVStore::is_dirty() { return dirty; }

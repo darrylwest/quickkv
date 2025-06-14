@@ -43,5 +43,18 @@ int main() {
         }
     }
 
+    store.set_default_path("data/data-file.backup");
+    const auto key = "80uEPvuHCyCz";
+    store.set(key, "my new value");
+
+    std::println("store is dirty {} so write to disk, last write: {}", store.is_dirty(), store.get_last_write_seconds());
+
+    timer.start();
+    store.write();
+    timer.stop();
+    timer.show_duration();
+
+    std::println("store is dirty {} so write to disk, last write: {}", store.is_dirty(), store.get_last_write_seconds());
+
     return 0;
 }

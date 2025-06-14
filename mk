@@ -74,8 +74,13 @@ do
 
             shift
         ;;
+        multi)
+            ./build/examples/multi-store
+
+            shift
+        ;;
         watch)
-            watchexec -c -w src/ -w include/ -w tests/ -e h,hpp,cpp ./mk build unit
+            watchexec -c -w src/ -w include/ -w examples/ -w tests/ -e h,hpp,cpp ./mk build unit multi
 
             exit 0
         ;;

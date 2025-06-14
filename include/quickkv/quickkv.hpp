@@ -26,7 +26,7 @@ template<typename T>
 using Optional = std::optional<T>;
 
 namespace quickkv {
-    constexpr auto VERSION = "0.7.1.124";
+    constexpr auto VERSION = "0.7.2.125";
     constexpr StrView get_version() { return VERSION; }
 
     using KeyType = Str;
@@ -46,6 +46,7 @@ namespace quickkv {
         mutable std::mutex mtx; // mutable to allow locking in const methods
         FilePath default_path = DEFAULT_PATH;
         bool dirty = false;
+        std::time_t last_write_seconds = 0;
 
     public:
         KVStore() = default;
@@ -83,6 +84,8 @@ namespace quickkv {
 
         // save the current database to external source, default path or other
         bool write();
+
+        std::time_t get_last_write_seconds() const;
 
         // append the key/value to the default file; throws FileException on error; clears dirty flag
         void append(const KeyType &key, const Str &value);

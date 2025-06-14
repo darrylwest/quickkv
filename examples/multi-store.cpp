@@ -34,6 +34,19 @@ std::map<std::string, std::unique_ptr<quickkv::KVStore>> create_stores() {
     return stores;
 }
 
+void show_contacts(const std::map<std::string, std::unique_ptr<quickkv::KVStore>> &stores) {
+    auto it = stores.find("contact-list");
+    if (it != stores.end()) {
+        auto store = it->second.get();
+
+        std::println("contacts: {}", store->size());
+        auto last5 = store->last(5);
+        for (const auto& [key, value] : last5) {
+            std::println("key: {} value: {}", key, value);
+        }
+    }
+}
+
 int main() {
     std::puts("Creating multiple stores");
 
@@ -51,16 +64,9 @@ int main() {
         std::println("store: {} size: {}", path, store->size());
     }
 
-    auto it = stores.find("contact-list");
-    if (it != stores.end()) {
-        auto store = it->second.get();
+    show_contacts(stores);
 
-        std::println("contacts: {}", store->size());
-        auto last5 = store->last(5);
-        for (const auto& [key, value] : last5) {
-            std::println("key: {} value: {}", key, value);
-        }
-    }
+    // now write the data to backup files
 
     return 0;
 }
