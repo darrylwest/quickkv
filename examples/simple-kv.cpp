@@ -26,7 +26,7 @@ int main() {
     std::println("after fill, db size: {}", store.size());
 
     // write the file to disk
-    auto filename = "/tmp/test.db";
+    auto filename = "data/simple-kv-test.backup";
     store.set_default_path(filename);
     timer.start();
     if (store.write()) {
