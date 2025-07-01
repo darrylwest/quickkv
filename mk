@@ -15,10 +15,8 @@ export os="$(uname -s)"
 export arch="$(uname -m)"
 
 [ $os == "Linux" ] && {
-    # export CC=/usr/bin/clang
-    # export CXX=/usr/bin/clang++
-    export CC=/usr/local/bin/gcc
-    export CXX=/usr/local/bin/g++
+    # export CC=/usr/local/bin/gcc
+    # export CXX=/usr/local/bin/g++
     export FLAGS="-j8"
 } || {
     export FLAGS="-j20"
