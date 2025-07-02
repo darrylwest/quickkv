@@ -11,3 +11,4 @@ logs/*.log
 datetimelib
 soxlib
 domain-keys
+artifacts
