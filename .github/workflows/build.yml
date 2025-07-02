@@ -36,6 +36,16 @@ jobs:
         gcc --version
         g++ --version
     
+    - name: Install Catch2
+      run: |
+        git clone https://github.com/catchorg/Catch2.git
+        cd Catch2
+        git checkout v3.7.1
+        cmake -B build -S . -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX=/usr/local
+        cmake --build build --parallel $(nproc)
+        sudo cmake --build build --target install
+        cd ..
+    
     - name: Clone and build domain-keys dependency
       run: |
         git clone https://github.com/darrylwest/cpp-domain-keys.git domain-keys-src
