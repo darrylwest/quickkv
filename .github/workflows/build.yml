@@ -71,8 +71,7 @@ jobs:
     
     - name: Run tests
       run: |
-        cd build
-        ./unit_tests
+        ./build/unit_tests
     
     - name: Package artifacts
       run: |
