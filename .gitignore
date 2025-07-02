@@ -11,4 +11,5 @@ logs/*.log
 datetimelib
 soxlib
 domain-keys
-artifacts
+artifacts/*.tgz
+artifacts/*.tar.gz
