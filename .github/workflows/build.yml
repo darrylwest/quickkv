@@ -38,7 +38,7 @@ jobs:
         git checkout v3.7.1
         cmake -B build -S . -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX=/usr/local
         cmake --build build --parallel $(nproc)
-        sudo cmake --build build --target install
+        cmake --build build --target install
         cd ..
     
     - name: Clone and build domain-keys dependency
@@ -48,7 +48,7 @@ jobs:
         mkdir build && cd build
         cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -GNinja
         ninja
-        sudo ninja install
+        ninja install
     
     - name: Configure CMake
       run: |
